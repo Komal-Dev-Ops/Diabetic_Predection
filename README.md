@@ -12,5 +12,5 @@ python application.py
 
 To access your flask application open new tab in and paste the url:
 ```
-http://Public-IP:5005
+https://Public-IP:5005
 ```
