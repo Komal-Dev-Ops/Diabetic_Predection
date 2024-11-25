@@ -1,5 +1,5 @@
-# Use an official Miniconda image as a base
-FROM continuumio/miniconda3:4.12.0
+# Use Miniconda as the base image
+FROM continuumio/miniconda3
 
 # Set the working directory in the container
 WORKDIR /app
@@ -7,16 +7,17 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
-# Create a new conda environment and install dependencies
-RUN conda init bash && \
-    /bin/bash -c "conda create -n app-env python=3.8 -y" && \
-    /bin/bash -c "source activate app-env && pip install -r requirements.txt"
+# Ensure the environment is activated every time
+SHELL ["conda", "run", "-n", "komal", "/bin/bash", "-c"]
+
+# Install any needed packages in the existing `komal` environment
+RUN conda run -n komal pip install --no-cache-dir -r requirements.txt
 
 # Expose the port the app runs on
 EXPOSE 5005
 
-# Define environment variable to ensure Python output is unbuffered
-ENV PYTHONUNBUFFERED=1
+# Define environment variable to avoid python buffering
+ENV PYTHONUNBUFFERED 1
 
-# Activate the environment and run the application
-CMD ["bash", "-c", "source activate app-env && python application.py"]
+# Run the application with the `komal` environment activated
+CMD ["conda", "run", "-n", "komal", "python", "application.py"]
